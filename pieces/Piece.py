@@ -3,7 +3,7 @@ import os
 from board.Color import Color
 
 
-class Figure(pygame.sprite.Sprite):
+class Piece(pygame.sprite.Sprite):
     def __init__(self, color: Color):
         pygame.sprite.Sprite.__init__(self)
         self.image = None
@@ -11,28 +11,26 @@ class Figure(pygame.sprite.Sprite):
         self.color = color
 
     def is_legal_move(self, board: dict, old_position: tuple, new_position: tuple) -> bool:
-        # TODO: Check for legal figure move
-        # Check if same position
-        # Check for same color
-        # Check if legal pattern
-        # Check if move possible due to other figures
-        return old_position!=new_position
-    
+        return new_position in self.get_legal_positions(board, old_position)
+
+    def get_legal_positions(self, board: dict, position: tuple) -> list:
+        raise NotImplementedError("Please define this function for your class.")
+
     @property
     def x(self):
         return self.rect.x
 
     @x.setter
-    def x(self, i):
-        self.rect.x = i
+    def x(self, value):
+        self.rect.x = value
 
     @property
     def y(self):
         return self.rect.y
 
     @y.setter
-    def y(self, i):
-        self.rect.y = i
+    def y(self, value):
+        self.rect.y = value
     
     @staticmethod
     def get_asset(path: str, tile_size: int):

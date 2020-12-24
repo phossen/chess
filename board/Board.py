@@ -1,14 +1,9 @@
-from figures import *
+from pieces import *
 from .Color import Color
 
 
 class Board(object):
-    def __init__(self, tileSize: int):
-        self.board = self.create_board(tileSize)
-
-    def get_board(self):
-        return self.board
-
+    
     @staticmethod
     def create_board(tileSize: int):
         letters = ["a", "b", "c", "d", "e", "f", "g", "h"]
