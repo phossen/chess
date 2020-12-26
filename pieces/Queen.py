@@ -10,6 +10,37 @@ class Queen(Piece):
         else:
             self.image = Piece.get_asset('assets/blackQueen.png', tile_size)
         self.rect = self.image.get_rect(topleft=(x, y))
+        self.value = 9
 
     def get_legal_positions(self, board: dict, position: tuple) -> list:
-        return []
+        legal_positions = []
+
+        def check_direction(board: dict, position: tuple, direction) -> list:
+            legal_positions = []
+            new_position = position
+            for i in range(7):
+                new_position = direction(new_position)
+                if new_position is not None:
+                    piece = board.piece_at_position(new_position)
+                    if piece is not None:
+                        if piece.color != self.color:
+                            legal_positions.append(new_position)
+                        break
+                    else:
+                        legal_positions.append(new_position)
+                else:
+                    break
+            return legal_positions
+
+        for direction in [
+                board.up,
+                board.up_right,
+                board.right,
+                board.down_right,
+                board.down,
+                board.down_left,
+                board.left,
+                board.up_left]:
+            legal_positions.extend(check_direction(board, position, direction))
+
+        return legal_positions

@@ -1,14 +1,9 @@
 # TODO
 
-* Add en passant rule
-* Add Rochade
-* Add exchangement from pawn to other piece
-* Check for legal moves for each piece
-* Check for check and checkmate/remi
-* Schach Uhr
+* Add logging
 * Code Todo's
-* Add border?
-* Repository online git
-* Figure -> pieces test
-* Add chess engine and universal chess engine interface
-* pylint refactor
+* Add en passant
+* Add rochade
+* Add exchangement from pawn to other piece
+* Check for check, checkmate, and draw
+* Add universal chess engine interface and chess engine

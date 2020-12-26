@@ -8,13 +8,19 @@ class Piece(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = None
         self.rect = None
+        self.value = 0
         self.color = color
 
-    def is_legal_move(self, board: dict, old_position: tuple, new_position: tuple) -> bool:
+    def is_legal_move(
+            self,
+            board: dict,
+            old_position: tuple,
+            new_position: tuple) -> bool:
         return new_position in self.get_legal_positions(board, old_position)
 
     def get_legal_positions(self, board: dict, position: tuple) -> list:
-        raise NotImplementedError("Please define this function for your class.")
+        raise NotImplementedError(
+            "Please define this function for your class.")
 
     @property
     def x(self):
@@ -31,8 +37,8 @@ class Piece(pygame.sprite.Sprite):
     @y.setter
     def y(self, value):
         self.rect.y = value
-    
+
     @staticmethod
     def get_asset(path: str, tile_size: int):
-        return pygame.transform.scale(pygame.image.load(os.path.normpath(path)).convert_alpha(),
-                                                                         (tile_size, tile_size))
+        return pygame.transform.scale(pygame.image.load(
+            os.path.normpath(path)).convert_alpha(), (tile_size, tile_size))

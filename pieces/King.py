@@ -10,6 +10,31 @@ class King(Piece):
         else:
             self.image = Piece.get_asset('assets/blackKing.png', tile_size)
         self.rect = self.image.get_rect(topleft=(x, y))
-    
+        self.value = 4
+        self.has_moved = False
+
     def get_legal_positions(self, board: dict, position: tuple) -> list:
-        return []
+        legal_positions = []
+
+        def check_direction(board: dict, position: tuple, direction) -> tuple:
+            new_position = direction(position)
+            if new_position is not None:
+                piece = board.piece_at_position(new_position)
+                if piece is not None:
+                    if piece.color != self.color:
+                        return new_position
+                else:
+                    return new_position
+
+        for direction in [
+                board.up,
+                board.up_right,
+                board.right,
+                board.down_right,
+                board.down,
+                board.down_left,
+                board.left,
+                board.up_left]:
+            legal_positions.append(check_direction(board, position, direction))
+
+        return legal_positions
