@@ -19,8 +19,7 @@ class Piece(pygame.sprite.Sprite):
         return new_position in self.get_legal_positions(board, old_position)
 
     def get_legal_positions(self, board: dict, position: tuple) -> list:
-        raise NotImplementedError(
-            "Please define this function for your class.")
+        raise NotImplementedError("Please define this function for your class.")
 
     @property
     def x(self):

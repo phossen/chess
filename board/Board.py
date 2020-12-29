@@ -31,12 +31,12 @@ class Board(object):
                             2 * tileSize,
                             0,
                             tileSize),
-                        King(
+                        Queen(
                             Color.BLACK,
                             3 * tileSize,
                             0,
                             tileSize),
-                        Queen(
+                        King(
                             Color.BLACK,
                             4 * tileSize,
                             0,
@@ -100,12 +100,12 @@ class Board(object):
                             2 * tileSize,
                             7 * tileSize,
                             tileSize),
-                        King(
+                        Queen(
                             Color.WHITE,
                             3 * tileSize,
                             7 * tileSize,
                             tileSize),
-                        Queen(
+                        King(
                             Color.WHITE,
                             4 * tileSize,
                             7 * tileSize,
@@ -130,8 +130,81 @@ class Board(object):
     def get_board(self):
         return self.board
 
-    def fields(self):
+    def positions(self):
         return [j for row in self.board.values() for j in row.values()]
+
+    def get_in_between_positions(self, position1: tuple, position2: tuple) -> list:
+        positions_in_between = []
+        
+        if position1[0] == position2[0]:
+            # Left
+            if ord(position1[1]) > ord(position2[1]):
+                current_pos = position1
+                while True:
+                    current_pos = self.left(current_pos)
+                    if current_pos != position2:
+                        break
+                    positions_in_between.append(current_pos)
+            # Right
+            else:
+                current_pos = position1
+                while True:
+                    current_pos = self.right(current_pos)
+                    if current_pos != position2:
+                        break
+                    positions_in_between.append(current_pos)
+        elif position1[1] == position2[1]:
+            # Down
+            if ord(position1[1]) > ord(position2[1]):
+                current_pos = position1
+                while True:
+                    current_pos = self.down(current_pos)
+                    if current_pos != position2:
+                        break
+                    positions_in_between.append(current_pos)
+            # Up
+            else:
+                current_pos = position1
+                while True:
+                    current_pos = self.up(current_pos)
+                    if current_pos != position2:
+                        break
+                    positions_in_between.append(current_pos)
+        else:
+            # Up right
+            if ord(position1[0]) < ord(position2[0]) and ord(position1[1]) < ord(position2[1]):
+                current_pos = position1
+                while True:
+                    current_pos = self.up_right(current_pos)
+                    if current_pos != position2:
+                        break
+                    positions_in_between.append(current_pos)
+            # Down right
+            if ord(position1[0]) > ord(position2[0]) and ord(position1[1]) < ord(position2[1]):
+                current_pos = position1
+                while True:
+                    current_pos = self.down_right(current_pos)
+                    if current_pos != position2:
+                        break
+                    positions_in_between.append(current_pos)
+            # Down left
+            if ord(position1[0]) > ord(position2[0]) and ord(position1[1]) > ord(position2[1]):
+                current_pos = position1
+                while True:
+                    current_pos = self.down_left(current_pos)
+                    if current_pos != position2:
+                        break
+                    positions_in_between.append(current_pos)
+            # Up left
+            else:
+                current_pos = position1
+                while True:
+                    current_pos = self.up_left(current_pos)
+                    if current_pos != position2:
+                        break
+                    positions_in_between.append(current_pos)
+
+        return positions_in_between
 
     def is_legal_position(self, position: tuple):
         return position[0] in self.y_axis and\
@@ -148,7 +221,12 @@ class Board(object):
     def move(self, old_position: tuple, new_position: tuple):
         self.board[new_position[0]][new_position[1]
                                     ] = self.board[old_position[0]][old_position[1]]
+        if old_position[1] in self.board[old_position[0]]:
+            deleted_piece = self.board[old_position[0]][old_position[1]]
+        else:
+            deleted_piece = None
         del self.board[old_position[0]][old_position[1]]
+        return deleted_piece
 
     # --- Moves ---
     def up(self, position):

@@ -12,6 +12,9 @@ class Queen(Piece):
         self.rect = self.image.get_rect(topleft=(x, y))
         self.value = 9
 
+    def __name__(self):
+        return "Queen"
+
     def get_legal_positions(self, board: dict, position: tuple) -> list:
         legal_positions = []
 

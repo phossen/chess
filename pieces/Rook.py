@@ -11,6 +11,10 @@ class Rook(Piece):
             self.image = Piece.get_asset('assets/blackRook.png', tile_size)
         self.rect = self.image.get_rect(topleft=(x, y))
         self.value = 5
+        self.has_moved = False
+
+    def __name__(self):
+        return "Rook"
 
     def get_legal_positions(self, board: dict, position: tuple) -> list:
         legal_positions = []
