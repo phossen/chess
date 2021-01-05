@@ -4,12 +4,17 @@ from board.Color import Color
 
 
 class Piece(pygame.sprite.Sprite):
-    def __init__(self, color: Color):
+    def __init__(self, color: Color, x: int, y: int, tile_size: int):
         pygame.sprite.Sprite.__init__(self)
-        self.image = None
-        self.rect = None
-        self.value = 0
         self.color = color
+        if self.color == Color.WHITE:
+            self.image = Piece.get_asset('assets/white' + self.name + '.png', tile_size)
+        else:
+            self.image = Piece.get_asset('assets/black' + self.name + '.png', tile_size)
+        self.rect = self.image.get_rect(topleft=(x, y))
+
+    def __name__(self):
+        return self.name
 
     def is_legal_move(
             self,

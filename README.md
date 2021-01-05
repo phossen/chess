@@ -1,8 +1,8 @@
 # TODO
 
 * Refactor get_legal_positions to use own attributes
+* Test check, checkmate and related things (Currently does weird stuff)
 * Code Todo's
-* Test Check, Checkmate and related things
 * Check draw
     * When the player on the move has no legal move available, but his king is not in check (stalemate).
     * When a position has arisen in which neither player can mate the opponent's king with any sequence of regular moves. Such a position is called a "dead position".
@@ -18,5 +18,6 @@
     * No position that the king goes over is threatend
     * The king is not checked before and after castling
 * Add universal chess engine interface and chess engine
-* Test
-* Review&Refactoring
+* Testing
+* Review&Refactoring&Documentation
+* Write README

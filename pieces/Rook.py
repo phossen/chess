@@ -4,17 +4,10 @@ from board.Color import Color
 
 class Rook(Piece):
     def __init__(self, color: Color, x: int, y: int, tile_size: int):
-        super().__init__(color)
-        if self.color == Color.WHITE:
-            self.image = Piece.get_asset('assets/whiteRook.png', tile_size)
-        else:
-            self.image = Piece.get_asset('assets/blackRook.png', tile_size)
-        self.rect = self.image.get_rect(topleft=(x, y))
+        self.name = "Rook"
         self.value = 5
+        super().__init__(color, x, y, tile_size)
         self.has_moved = False
-
-    def __name__(self):
-        return "Rook"
 
     def get_legal_positions(self, board: dict, position: tuple) -> list:
         legal_positions = []

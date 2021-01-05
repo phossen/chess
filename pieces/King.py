@@ -4,20 +4,27 @@ from board.Color import Color
 
 class King(Piece):
     def __init__(self, color: Color, x: int, y: int, tile_size: int):
-        super().__init__(color)
-        if self.color == Color.WHITE:
-            self.image = Piece.get_asset('assets/whiteKing.png', tile_size)
-        else:
-            self.image = Piece.get_asset('assets/blackKing.png', tile_size)
-        self.rect = self.image.get_rect(topleft=(x, y))
+        self.name = "King"
         self.value = 4
+        super().__init__(color, x, y, tile_size)
         self.has_moved = False
-
-    def __name__(self):
-        return "King"
 
     def get_legal_positions(self, board: dict, position: tuple) -> list:
         legal_positions = []
+
+        def positions_controlled_by_enemy(board: dict) -> set:
+            legal_positions = set([])
+            for y in board.y_axis:
+                for x in board.x_axis:
+                    current_piece = board.piece_at_position((y,x))
+                    if current_piece is not None:
+                        if type(current_piece) == King:
+                            # TODO: Take account for King fields without causing recursion
+                            continue
+                        if current_piece.color != self.color:
+                            legal_positions.update(current_piece.get_legal_positions(board, (y,x)))
+            return legal_positions
+        enemy_positions = positions_controlled_by_enemy(board)
 
         def check_direction(board: dict, position: tuple, direction) -> tuple:
             new_position = direction(position)
@@ -25,11 +32,12 @@ class King(Piece):
                 piece = board.piece_at_position(new_position)
                 if piece is not None:
                     if piece.color != self.color:
-                        # TODO: Check of position is threatend
-                        return new_position
+                        if new_position not in enemy_positions:
+                            return new_position
                 else:
-                    # TODO: Check of position is threatend
-                    return new_position
+                    if new_position not in enemy_positions:
+                        return new_position
+            return None
 
         for direction in [
                 board.up,
@@ -40,7 +48,9 @@ class King(Piece):
                 board.down_left,
                 board.left,
                 board.up_left]:
-            legal_positions.append(check_direction(board, position, direction))
+            new_pos = check_direction(board, position, direction)
+            if new_pos is not None:
+                legal_positions.append(new_pos)
 
         # TODO: Add castling
         if not self.has_moved:

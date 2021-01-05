@@ -3,12 +3,12 @@ import numpy as np
 import os
 from board.Board import Board
 from board.Color import Color
-from pieces import King, Pawn, Queen
+from pieces import *
 import logging
 
 
 # Init
-logging.basicConfig(filename='game.log', level=logging.DEBUG)
+logging.basicConfig(filename='game.log', level=logging.DEBUG) # TODO: Change to INFO
 pygame.init()
 pygame.display.set_caption('Chess')
 gameIcon = pygame.image.load(os.path.normpath("assets/whiteKing.png"))
@@ -65,6 +65,7 @@ def check_checkmate(board, color: Color) -> bool:
         return False
     
     # Piece giving check can't be killed
+    # TODO: Account for check after killing check giving piece
     for position in board.positions():
         if position.color != color:
             check_giving_piece_pos = (board.y_axis[(int(position.y/tileSize))], board.x_axis[int(position.x/tileSize)])
@@ -97,9 +98,13 @@ def check_draw(board, color: Color) -> bool:
                 return False
     return True
 
-# Create Board (top left is (0,0))
+# Create and draw Board (top left is (0,0))
 board = Board(tileSize)
 viable_coords = [i * tileSize for i in range(boardLength)]
+draw_tiles(gameDisplay)
+for position in board.positions():
+    gameDisplay.blit(position.image, position.rect)
+pygame.display.update()
 
 # Game loop
 logging.info("Starting Game")
@@ -133,7 +138,7 @@ while running:
                         selected = position
                         selected_offset_x = position.x - event.pos[0]
                         selected_offset_y = position.y - event.pos[1]
-                        logging.debug("Clicked on {} ({}{})".format(selected.__class__.__name__,
+                        logging.debug("Clicked on {} ({}{})".format(selected.name,
                             board.y_axis[(int(old_y / tileSize))], board.x_axis[int(old_x / tileSize)]))
                         break
 
@@ -151,7 +156,7 @@ while running:
                     new_position = (
                         board.y_axis[(int(new_y / tileSize))], board.x_axis[int(new_x / tileSize)])
                     
-                    # Move to new position
+                    # Try to move to new position
                     if selected.is_legal_move(board, old_position, new_position):
                         old_piece = board.move(old_position, new_position)
 
@@ -176,11 +181,13 @@ while running:
                                     logging.debug("Exchanged Pawn on {}{} to Queen.".format(new_position[0], new_position[1]))
                             elif type(selected) == King:
                                 selected.has_moved = True
+                            elif type(selected) == Rook:
+                                selected.has_moved = True
 
                             # Switch player
                             active_player = Color.BLACK if active_player == Color.WHITE else Color.WHITE
                             logging.info("{} {}{}{}{} {}".format(turn, old_position[0], old_position[1],
-                                                                 new_position[0], new_position[1], selected.__class__.__name__))
+                                                                 new_position[0], new_position[1], selected.name))
                             turn += 1
 
                             # Check for checkmate and draw
@@ -200,9 +207,17 @@ while running:
                                                                                           new_position[0], new_position[1]))
                         selected.x = old_x
                         selected.y = old_y
+
+                    # Reset selected piece
                     old_x = None
                     old_y = None
                     selected = None
+
+                    # Update canvas
+                    draw_tiles(gameDisplay)
+                    for position in board.positions():
+                        gameDisplay.blit(position.image, position.rect)
+                    pygame.display.update()
 
         # Drag piece
         elif event.type == pygame.MOUSEMOTION:
@@ -212,12 +227,13 @@ while running:
                 selected.y = event.pos[1] + selected_offset_y
 
         # Update canvas
-        draw_tiles(gameDisplay)
-        for position in board.positions():
-            gameDisplay.blit(position.image, position.rect)
         if selected is not None:
-            gameDisplay.blit(selected.image, selected.rect)
-        pygame.display.update()
+            draw_tiles(gameDisplay)
+            for position in board.positions():
+                gameDisplay.blit(position.image, position.rect)
+            if selected is not None:
+                gameDisplay.blit(selected.image, selected.rect)
+            pygame.display.update()
 
         clock.tick(25)
 

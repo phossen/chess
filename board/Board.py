@@ -127,9 +127,6 @@ class Board(object):
                             tileSize)])}}
         return board
 
-    def get_board(self):
-        return self.board
-
     def positions(self):
         return [j for row in self.board.values() for j in row.values()]
 
@@ -208,7 +205,7 @@ class Board(object):
 
     def is_legal_position(self, position: tuple):
         return position[0] in self.y_axis and\
-            position[1] in self.x_axis
+               position[1] in self.x_axis
 
     def is_occupied(self, position: tuple) -> bool:
         return position[1] in self.board[position[0]]
@@ -219,12 +216,11 @@ class Board(object):
         return None
 
     def move(self, old_position: tuple, new_position: tuple):
-        self.board[new_position[0]][new_position[1]
-                                    ] = self.board[old_position[0]][old_position[1]]
-        if old_position[1] in self.board[old_position[0]]:
-            deleted_piece = self.board[old_position[0]][old_position[1]]
+        if self.is_occupied(new_position):
+            deleted_piece = self.board[new_position[0]][new_position[1]]
         else:
             deleted_piece = None
+        self.board[new_position[0]][new_position[1]] = self.board[old_position[0]][old_position[1]]
         del self.board[old_position[0]][old_position[1]]
         return deleted_piece
 
