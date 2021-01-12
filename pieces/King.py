@@ -22,6 +22,7 @@ class King(Piece):
                             # TODO: Take account for King fields without causing recursion
                             continue
                         if current_piece.color != self.color:
+                            # TODO: Take into account if king is checked after king takes
                             legal_positions.update(current_piece.get_legal_positions(board, (y,x)))
             return legal_positions
         enemy_positions = positions_controlled_by_enemy(board)

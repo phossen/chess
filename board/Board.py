@@ -224,6 +224,9 @@ class Board(object):
         del self.board[old_position[0]][old_position[1]]
         return deleted_piece
 
+    # --- Board States ---
+    # TODO: Move three check functions from game to here
+
     # --- Moves ---
     def up(self, position):
         if position is None:

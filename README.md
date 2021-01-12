@@ -1,7 +1,6 @@
 # TODO
 
-* Refactor get_legal_positions to use own attributes
-* Test check, checkmate and related things (Currently does weird stuff)
+* Test checkmate
 * Code Todo's
 * Check draw
     * When the player on the move has no legal move available, but his king is not in check (stalemate).

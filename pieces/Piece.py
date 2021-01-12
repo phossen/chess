@@ -7,6 +7,9 @@ class Piece(pygame.sprite.Sprite):
     def __init__(self, color: Color, x: int, y: int, tile_size: int):
         pygame.sprite.Sprite.__init__(self)
         self.color = color
+        self.tile_size = tile_size
+        self.x_axis = ["a", "b", "c", "d", "e", "f", "g", "h"]
+        self.y_axis = ["8", "7", "6", "5", "4", "3", "2", "1"]
         if self.color == Color.WHITE:
             self.image = Piece.get_asset('assets/white' + self.name + '.png', tile_size)
         else:
@@ -25,6 +28,10 @@ class Piece(pygame.sprite.Sprite):
 
     def get_legal_positions(self, board: dict, position: tuple) -> list:
         raise NotImplementedError("Please define this function for your class.")
+
+    def get_board_position(self):
+        return (self.y_axis[int(self.y/self.tile_size)],
+                self.x_axis[int(self.x/self.tile_size)])
 
     @property
     def x(self):

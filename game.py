@@ -168,6 +168,8 @@ while running:
                             board.board[old_position[0]][old_position[1]] = selected
                             if old_piece is not None:
                                 board.board[new_position[0]][new_position[1]] = old_piece
+                            else:
+                                del board.board[new_position[0]][new_position[1]]
                         else:
                             selected.x = new_x
                             selected.y = new_y
@@ -180,6 +182,18 @@ while running:
                                     board.board[new_position[0]][new_position[1]] = Queen(active_player, new_x, new_y, tileSize)
                                     logging.debug("Exchanged Pawn on {}{} to Queen.".format(new_position[0], new_position[1]))
                             elif type(selected) == King:
+                                # Castling
+                                if not selected.has_moved:
+                                    if active_player == Color.WHITE:
+                                        if new_position == ("1","g"):
+                                            board.move(("1","h"), ("1","f"))
+                                        elif new_position == ("1","c"):
+                                            board.move(("1","a"), ("1","d"))
+                                    else:
+                                        if new_position == ("8","g"):
+                                            board.move(("8","h"), ("8","f"))
+                                        elif new_position == ("8","c"):
+                                            board.move(("1","a"), ("1","d"))
                                 selected.has_moved = True
                             elif type(selected) == Rook:
                                 selected.has_moved = True
