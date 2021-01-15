@@ -7,9 +7,9 @@ class Board(object):
         self.tileSize = tileSize
         self.x_axis = ["a", "b", "c", "d", "e", "f", "g", "h"]
         self.y_axis = ["8", "7", "6", "5", "4", "3", "2", "1"]
-        self.board = self.create_board(tileSize)
+        self.board = self.create_board()
 
-    def create_board(self, tileSize: int):
+    def create_board(self):
         board = {
             "8": {
                 l: f for l,
@@ -20,42 +20,42 @@ class Board(object):
                             Color.BLACK,
                             0,
                             0,
-                            tileSize),
+                            self.tileSize),
                         Knight(
                             Color.BLACK,
-                            1 * tileSize,
+                            1 * self.tileSize,
                             0,
-                            tileSize),
+                            self.tileSize),
                         Bishop(
                             Color.BLACK,
-                            2 * tileSize,
+                            2 * self.tileSize,
                             0,
-                            tileSize),
+                            self.tileSize),
                         Queen(
                             Color.BLACK,
-                            3 * tileSize,
+                            3 * self.tileSize,
                             0,
-                            tileSize),
+                            self.tileSize),
                         King(
                             Color.BLACK,
-                            4 * tileSize,
+                            4 * self.tileSize,
                             0,
-                            tileSize),
+                            self.tileSize),
                         Bishop(
                             Color.BLACK,
-                            5 * tileSize,
+                            5 * self.tileSize,
                             0,
-                            tileSize),
+                            self.tileSize),
                         Knight(
                             Color.BLACK,
-                            6 * tileSize,
+                            6 * self.tileSize,
                             0,
-                            tileSize),
+                            self.tileSize),
                         Rook(
                             Color.BLACK,
-                            7 * tileSize,
+                            7 * self.tileSize,
                             0,
-                            tileSize)])},
+                            self.tileSize)])},
             "7": {
                 l: f for l,
                 f in zip(
@@ -63,9 +63,9 @@ class Board(object):
                     [
                         Pawn(
                             Color.BLACK,
-                            i * tileSize,
-                            1 * tileSize,
-                            tileSize) for i in range(8)])},
+                            i * self.tileSize,
+                            1 * self.tileSize,
+                            self.tileSize) for i in range(8)])},
             "6": {},
             "5": {},
             "4": {},
@@ -77,9 +77,9 @@ class Board(object):
                     [
                         Pawn(
                             Color.WHITE,
-                            i * tileSize,
-                            6 * tileSize,
-                            tileSize) for i in range(8)])},
+                            i * self.tileSize,
+                            6 * self.tileSize,
+                            self.tileSize) for i in range(8)])},
             "1": {
                 l: f for l,
                 f in zip(
@@ -88,43 +88,43 @@ class Board(object):
                         Rook(
                             Color.WHITE,
                             0,
-                            7 * tileSize,
-                            tileSize),
+                            7 * self.tileSize,
+                            self.tileSize),
                         Knight(
                             Color.WHITE,
-                            1 * tileSize,
-                            7 * tileSize,
-                            tileSize),
+                            1 * self.tileSize,
+                            7 * self.tileSize,
+                            self.tileSize),
                         Bishop(
                             Color.WHITE,
-                            2 * tileSize,
-                            7 * tileSize,
-                            tileSize),
+                            2 * self.tileSize,
+                            7 * self.tileSize,
+                            self.tileSize),
                         Queen(
                             Color.WHITE,
-                            3 * tileSize,
-                            7 * tileSize,
-                            tileSize),
+                            3 * self.tileSize,
+                            7 * self.tileSize,
+                            self.tileSize),
                         King(
                             Color.WHITE,
-                            4 * tileSize,
-                            7 * tileSize,
-                            tileSize),
+                            4 * self.tileSize,
+                            7 * self.tileSize,
+                            self.tileSize),
                         Bishop(
                             Color.WHITE,
-                            5 * tileSize,
-                            7 * tileSize,
-                            tileSize),
+                            5 * self.tileSize,
+                            7 * self.tileSize,
+                            self.tileSize),
                         Knight(
                             Color.WHITE,
-                            6 * tileSize,
-                            7 * tileSize,
-                            tileSize),
+                            6 * self.tileSize,
+                            7 * self.tileSize,
+                            self.tileSize),
                         Rook(
                             Color.WHITE,
-                            7 * tileSize,
-                            7 * tileSize,
-                            tileSize)])}}
+                            7 * self.tileSize,
+                            7 * self.tileSize,
+                            self.tileSize)])}}
         return board
 
     def positions(self):
@@ -225,7 +225,65 @@ class Board(object):
         return deleted_piece
 
     # --- Board States ---
-    # TODO: Move three check functions from game to here
+    def check_check(self, color: Color) -> bool:
+        """Check if the given color is checked"""
+        king_pos = 1
+        legal_positions = set([])
+        for position in self.positions():
+            current_pos = (self.y_axis[(int(position.y/self.tileSize))], self.x_axis[int(position.x/self.tileSize)])
+            if position.color != color:
+                legal_positions.update(position.get_legal_positions(self, current_pos))
+            elif type(position) == King:
+                king_pos = current_pos
+            if king_pos in legal_positions:
+                return True
+        return king_pos in legal_positions
+
+    def check_checkmate(self, color: Color) -> bool:
+        """Check if the given color is checkmated (Check required)"""
+        # King can't make a legal move
+        for position in self.positions():
+            if type(position) == King and position.color == color:
+                king_pos = (self.y_axis[(int(position.y/self.tileSize))], self.x_axis[int(position.x/self.tileSize)])
+                king = position
+                break
+        
+        if len(king.get_legal_positions(self, king_pos)) != 0:
+            return False
+        
+        # Piece giving check can't be taken
+        # TODO: Account for check after taking check giving piece
+        for position in self.positions():
+            if position.color != color:
+                check_giving_piece_pos = (self.y_axis[(int(position.y/self.tileSize))], self.x_axis[int(position.x/self.tileSize)])
+                if king_pos in position.get_legal_positions(self, check_giving_piece_pos):
+                    check_giving_piece = position
+                    break
+        
+        for position in self.positions():
+            if position.color == color:
+                current_pos = (self.y_axis[(int(position.y/self.tileSize))], self.x_axis[int(position.x/self.tileSize)])
+                if check_giving_piece in position.get_legal_positions(self, current_pos):
+                    return False
+
+        # Piece can't go in between
+        positions_in_between = self.get_in_between_positions(king_pos, check_giving_piece_pos)
+        for position in self.positions():
+            if position.color == color:
+                current_pos = (self.y_axis[(int(position.y/self.tileSize))], self.x_axis[int(position.x/self.tileSize)])
+                if len(set(position.get_legal_positions(self, current_pos)).intersection(set(positions_in_between))) >= 1:
+                    return False
+        
+        return True
+
+    def check_draw(self, color: Color) -> bool:
+        """Check if given color has legal moves"""
+        for position in self.positions():
+            if position.color == color:
+                current_pos = (self.y_axis[(int(position.y/self.tileSize))], self.x_axis[int(position.x/self.tileSize)])
+                if len(position.get_legal_positions(self, current_pos)) != 0:
+                    return False
+        return True
 
     # --- Moves ---
     def up(self, position):

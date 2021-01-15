@@ -8,7 +8,7 @@ class Knight(Piece):
         self.value = 3
         super().__init__(color, x, y, tile_size)
 
-    def get_legal_positions(self, board: dict, position: tuple) -> list:
+    def get_legal_positions(self, board, position: tuple, include_own=False) -> list:
         legal_positions = []
 
         pos1 = board.up_right(board.up(position))
@@ -24,7 +24,9 @@ class Knight(Piece):
             if pos is not None:
                 piece = board.piece_at_position(pos)
                 if piece is not None:
-                    if piece.color != self.color:
+                    if include_own:
+                        legal_positions.append(pos)
+                    elif piece.color != self.color:
                         legal_positions.append(pos)
                 else:
                     legal_positions.append(pos)

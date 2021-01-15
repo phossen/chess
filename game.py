@@ -37,67 +37,6 @@ def draw_tiles(gameDisplay):
             coutner += 1
         coutner -= 1
 
-def check_check(board, color: Color) -> bool:
-    """Check if the given color is checked"""
-    king_pos = 1
-    legal_positions = set([])
-    for position in board.positions():
-        current_pos = (board.y_axis[(int(position.y/tileSize))], board.x_axis[int(position.x/tileSize)])
-        if position.color != color:
-            legal_positions.update(position.get_legal_positions(board, current_pos))
-        elif type(position) == King:
-            king_pos = current_pos
-        if king_pos in legal_positions:
-            return True
-    return king_pos in legal_positions
-
-def check_checkmate(board, color: Color) -> bool:
-    """Check if the given color is checkmated (Check required)"""
-
-    # King can't make a legal move
-    for position in board.positions():
-        if type(position) == King and position.color == color:
-            king_pos = (board.y_axis[(int(position.y/tileSize))], board.x_axis[int(position.x/tileSize)])
-            king = position
-            break
-    
-    if len(king.get_legal_positions(board, king_pos)) != 0:
-        return False
-    
-    # Piece giving check can't be killed
-    # TODO: Account for check after killing check giving piece
-    for position in board.positions():
-        if position.color != color:
-            check_giving_piece_pos = (board.y_axis[(int(position.y/tileSize))], board.x_axis[int(position.x/tileSize)])
-            if king_pos in position.get_legal_positions(board, check_giving_piece_pos):
-                check_giving_piece = position
-                break
-    
-    for position in board.positions():
-        if position.color == color:
-            current_pos = (board.y_axis[(int(position.y/tileSize))], board.x_axis[int(position.x/tileSize)])
-            if check_giving_piece in position.get_legal_positions(board, current_pos):
-                return False
-
-    # Piece can't go in between
-    positions_in_between = board.get_in_between_positions(king_pos, check_giving_piece_pos)
-    for position in board.positions():
-        if position.color == color:
-            current_pos = (board.y_axis[(int(position.y/tileSize))], board.x_axis[int(position.x/tileSize)])
-            if len(set(position.get_legal_positions(board, current_pos)).intersection(set(positions_in_between))) >= 1:
-                return False
-    
-    return True
-
-def check_draw(board, color: Color) -> bool:
-    """Check if given color has legal moves"""
-    for position in board.positions():
-        if position.color == color:
-            current_pos = (board.y_axis[(int(position.y/tileSize))], board.x_axis[int(position.x/tileSize)])
-            if len(position.get_legal_positions(board, current_pos)) != 0:
-                return False
-    return True
-
 # Create and draw Board (top left is (0,0))
 board = Board(tileSize)
 viable_coords = [i * tileSize for i in range(boardLength)]
@@ -159,9 +98,11 @@ while running:
                     # Try to move to new position
                     if selected.is_legal_move(board, old_position, new_position):
                         old_piece = board.move(old_position, new_position)
+                        selected.x = new_x
+                        selected.y = new_y
 
                         # Check if the move causes check or doesn't remove check
-                        if check_check(board, active_player):
+                        if board.check_check(active_player):
                             logging.debug("Illegal move! King is checked.")
                             selected.x = old_x
                             selected.y = old_y
@@ -171,9 +112,6 @@ while running:
                             else:
                                 del board.board[new_position[0]][new_position[1]]
                         else:
-                            selected.x = new_x
-                            selected.y = new_y
-
                             # Exchange pawn
                             if type(selected) == Pawn:
                                 if (active_player == Color.BLACK and new_position[0] == "1") or\
@@ -181,8 +119,8 @@ while running:
                                     # TODO: Exchange pawn for arbitrary other piece
                                     board.board[new_position[0]][new_position[1]] = Queen(active_player, new_x, new_y, tileSize)
                                     logging.debug("Exchanged Pawn on {}{} to Queen.".format(new_position[0], new_position[1]))
+                            # Castling
                             elif type(selected) == King:
-                                # Castling
                                 if not selected.has_moved:
                                     if active_player == Color.WHITE:
                                         if new_position == ("1","g"):
@@ -205,13 +143,13 @@ while running:
                             turn += 1
 
                             # Check for checkmate and draw
-                            if check_check(board, active_player):
-                                if check_checkmate(board, active_player):
+                            if board.check_check(active_player):
+                                if board.check_checkmate(active_player):
                                     logging.debug("Checkmate")
                                     running = False
                                     break
                                 logging.debug("Check")
-                            elif check_draw(board, active_player):
+                            elif board.check_draw(active_player):
                                     logging.debug("Draw")
                                     running = False
                                     break

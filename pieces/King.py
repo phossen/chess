@@ -9,25 +9,33 @@ class King(Piece):
         super().__init__(color, x, y, tile_size)
         self.has_moved = False
 
-    def get_legal_positions(self, board: dict, position: tuple) -> list:
+    def get_legal_positions(self, board, position: tuple, include_own=False) -> list:
         legal_positions = []
 
-        def positions_controlled_by_enemy(board: dict) -> set:
+        def positions_controlled_by_enemy(board) -> set:
             legal_positions = set([])
             for y in board.y_axis:
                 for x in board.x_axis:
                     current_piece = board.piece_at_position((y,x))
                     if current_piece is not None:
                         if type(current_piece) == King:
-                            # TODO: Take account for King fields without causing recursion
-                            continue
-                        if current_piece.color != self.color:
-                            # TODO: Take into account if king is checked after king takes
-                            legal_positions.update(current_piece.get_legal_positions(board, (y,x)))
+                            for direction in [board.up,
+                                              board.up_right,
+                                              board.right,
+                                              board.down_right,
+                                              board.down,
+                                              board.down_left,
+                                              board.left,
+                                              board.up_left]:
+                                new_pos = direction((y,x))
+                                if new_pos is not None:
+                                    legal_positions.update(new_pos)
+                        elif current_piece.color != self.color:
+                            legal_positions.update(current_piece.get_legal_positions(board, (y,x), include_own=True))
             return legal_positions
         enemy_positions = positions_controlled_by_enemy(board)
 
-        def check_direction(board: dict, position: tuple, direction) -> tuple:
+        def check_direction(board, position: tuple, direction) -> tuple:
             new_position = direction(position)
             if new_position is not None:
                 piece = board.piece_at_position(new_position)

@@ -8,7 +8,7 @@ class Pawn(Piece):
         self.value = 1
         super().__init__(color, x, y, tile_size)
 
-    def get_legal_positions(self, board: dict, position: tuple) -> list:
+    def get_legal_positions(self, board, position: tuple, include_own=False) -> list:
         legal_positions = []
 
         # White Pawn
@@ -19,18 +19,26 @@ class Pawn(Piece):
                 legal_positions.append(("4", position[1]))
             if position[1] not in board.board[chr(ord(position[0]) + 1)]:
                 legal_positions.append((chr(ord(position[0]) + 1), position[1]))
+            # Taking right
             if position[1] != "a":
                 if chr(ord(position[1]) - 1) in board.board[chr(ord(position[0]) + 1)]:
-                    if board.board[chr(ord(position[0]) + 1)]\
-                                  [chr(ord(position[1]) - 1)]\
-                                  .color == Color.BLACK:
+                    if include_own:
                         legal_positions.append((chr(ord(position[0]) + 1),
                                                 chr(ord(position[1]) - 1)))
+                    elif board.board[chr(ord(position[0]) + 1)]\
+                                    [chr(ord(position[1]) - 1)]\
+                                    .color == Color.BLACK:
+                        legal_positions.append((chr(ord(position[0]) + 1),
+                                                chr(ord(position[1]) - 1)))
+            # Taking left
             if position[1] != "h":
                 if chr(ord(position[1]) + 1) in board.board[chr(ord(position[0]) + 1)]:
-                    if board.board[chr(ord(position[0]) + 1)]\
-                                  [chr(ord(position[1]) + 1)]\
-                                  .color == Color.BLACK:
+                    if include_own:
+                        legal_positions.append((chr(ord(position[0]) + 1),
+                                                chr(ord(position[1]) + 1)))
+                    elif board.board[chr(ord(position[0]) + 1)]\
+                                    [chr(ord(position[1]) + 1)]\
+                                    .color == Color.BLACK:
                         legal_positions.append((chr(ord(position[0]) + 1),
                                                 chr(ord(position[1]) + 1)))
 
@@ -42,18 +50,26 @@ class Pawn(Piece):
                 legal_positions.append(("5", position[1]))
             if position[1] not in board.board[chr(ord(position[0]) - 1)]:
                 legal_positions.append((chr(ord(position[0]) - 1), position[1]))
+            # Taking right
             if position[1] != "a":
                 if chr(ord(position[1]) - 1) in board.board[chr(ord(position[0]) - 1)]:
-                    if board.board[chr(ord(position[0]) - 1)]\
-                                  [chr(ord(position[1]) - 1)]\
-                                  .color == Color.WHITE:
+                    if include_own:
                         legal_positions.append((chr(ord(position[0]) - 1),
                                                 chr(ord(position[1]) - 1)))
+                    elif board.board[chr(ord(position[0]) - 1)]\
+                                    [chr(ord(position[1]) - 1)]\
+                                    .color == Color.WHITE:
+                        legal_positions.append((chr(ord(position[0]) - 1),
+                                                chr(ord(position[1]) - 1)))
+            # Taking left
             if position[1] != "h":
                 if chr(ord(position[1]) + 1) in board.board[chr(ord(position[0]) - 1)]:
-                    if board.board[chr(ord(position[0]) - 1)]\
-                                  [chr(ord(position[1]) + 1)]\
-                                  .color == Color.WHITE:
+                    if include_own:
+                        legal_positions.append((chr(ord(position[0]) - 1),
+                                                chr(ord(position[1]) + 1)))
+                    elif board.board[chr(ord(position[0]) - 1)]\
+                                    [chr(ord(position[1]) + 1)]\
+                                    .color == Color.WHITE:
                         legal_positions.append((chr(ord(position[0]) - 1),
                                                 chr(ord(position[1]) + 1)))
 

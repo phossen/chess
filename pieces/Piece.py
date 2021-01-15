@@ -26,7 +26,7 @@ class Piece(pygame.sprite.Sprite):
             new_position: tuple) -> bool:
         return new_position in self.get_legal_positions(board, old_position)
 
-    def get_legal_positions(self, board: dict, position: tuple) -> list:
+    def get_legal_positions(self, board, position: tuple, include_own=False) -> list:
         raise NotImplementedError("Please define this function for your class.")
 
     def get_board_position(self):

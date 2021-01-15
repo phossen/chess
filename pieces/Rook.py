@@ -9,10 +9,10 @@ class Rook(Piece):
         super().__init__(color, x, y, tile_size)
         self.has_moved = False
 
-    def get_legal_positions(self, board: dict, position: tuple) -> list:
+    def get_legal_positions(self, board, position: tuple, include_own=False) -> list:
         legal_positions = []
 
-        def check_direction(board: dict, position: tuple, direction) -> list:
+        def check_direction(board, position: tuple, direction) -> list:
             legal_positions = []
             new_position = position
             for i in range(7):
@@ -20,6 +20,9 @@ class Rook(Piece):
                 if new_position is not None:
                     piece = board.piece_at_position(new_position)
                     if piece is not None:
+                        if include_own:
+                            legal_positions.append(new_position)
+                            break
                         if piece.color != self.color:
                             legal_positions.append(new_position)
                         break
