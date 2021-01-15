@@ -61,10 +61,46 @@ class King(Piece):
             if new_pos is not None:
                 legal_positions.append(new_pos)
 
-        # TODO: Add castling
+        # Castling
         if not self.has_moved:
-            if self.color == Color.WHITE and position[0] == "1" or\
-               self.color == Color.BLACK and position[0] == "8":
-                    pass
+            # White
+            if self.color == Color.WHITE and position[0] == "1":
+                if ("1", "e") not in enemy_positions:
+                    # Short
+                    rook = board.piece_at_position(("1","h"))
+                    if not rook.has_moved and\
+                    not board.is_occupied(("1","f")) and\
+                    not board.is_occupied(("1","g")):
+                        if ("1", "f") not in enemy_positions and ("1", "g") not in enemy_positions:
+                            legal_positions.append(("1","g"))
+                    # Long
+                    rook = board.piece_at_position(("1","a"))
+                    if rook is not None:
+                        if not rook.has_moved and\
+                        not board.is_occupied(("1","b")) and\
+                        not board.is_occupied(("1","c")) and\
+                        not board.is_occupied(("1","d")):
+                            if ("1", "b") not in enemy_positions and ("1", "c") not in enemy_positions and ("1", "d") not in enemy_positions:
+                                legal_positions.append(("1","c"))
+            # Black
+            elif self.color == Color.BLACK and position[0] == "8":
+                if ("8", "e") not in enemy_positions:
+                    # Short
+                    rook = board.piece_at_position(("8","h"))
+                    if rook is not None:
+                        if not rook.has_moved and\
+                        not board.is_occupied(("8","f")) and\
+                        not board.is_occupied(("8","g")):
+                            if ("8", "f") not in enemy_positions and ("8", "g") not in enemy_positions:
+                                legal_positions.append(("8","g"))
+                    # Long
+                    rook = board.piece_at_position(("8","a"))
+                    if rook is not None:
+                        if not rook.has_moved and\
+                        not board.is_occupied(("8","b")) and\
+                        not board.is_occupied(("8","c")) and\
+                        not board.is_occupied(("8","d")):
+                            if ("8", "b") not in enemy_positions and ("8", "c") not in enemy_positions and ("8", "d") not in enemy_positions:
+                                legal_positions.append(("8","c"))
 
         return legal_positions

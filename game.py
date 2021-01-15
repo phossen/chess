@@ -8,7 +8,7 @@ import logging
 
 
 # Init
-logging.basicConfig(filename='game.log', level=logging.DEBUG) # TODO: Change to INFO
+logging.basicConfig(filename='game.log', level=logging.INFO)
 pygame.init()
 pygame.display.set_caption('Chess')
 gameIcon = pygame.image.load(os.path.normpath("assets/whiteKing.png"))
@@ -124,14 +124,22 @@ while running:
                                 if not selected.has_moved:
                                     if active_player == Color.WHITE:
                                         if new_position == ("1","g"):
+                                            logging.debug("White short castling")
                                             board.move(("1","h"), ("1","f"))
+                                            board.board["1"]["f"].x = 5*tileSize
                                         elif new_position == ("1","c"):
+                                            logging.debug("White long castling")
                                             board.move(("1","a"), ("1","d"))
+                                            board.board["1"]["d"].x = 3*tileSize
                                     else:
                                         if new_position == ("8","g"):
+                                            logging.debug("Black short castling")
                                             board.move(("8","h"), ("8","f"))
+                                            board.board["8"]["f"].x = 5*tileSize
                                         elif new_position == ("8","c"):
-                                            board.move(("1","a"), ("1","d"))
+                                            logging.debug("Black long castling")
+                                            board.move(("8","a"), ("8","d"))
+                                            board.board["8"]["d"].x = 3*tileSize
                                 selected.has_moved = True
                             elif type(selected) == Rook:
                                 selected.has_moved = True
