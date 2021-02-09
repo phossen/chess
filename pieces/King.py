@@ -1,4 +1,5 @@
 from .Piece import Piece
+from .Rook import Rook
 from board.Color import Color
 
 
@@ -68,14 +69,15 @@ class King(Piece):
                 if ("1", "e") not in enemy_positions:
                     # Short
                     rook = board.piece_at_position(("1","h"))
-                    if not rook.has_moved and\
-                    not board.is_occupied(("1","f")) and\
-                    not board.is_occupied(("1","g")):
-                        if ("1", "f") not in enemy_positions and ("1", "g") not in enemy_positions:
-                            legal_positions.append(("1","g"))
+                    if type(rook) == Rook:
+                        if not rook.has_moved and\
+                        not board.is_occupied(("1","f")) and\
+                        not board.is_occupied(("1","g")):
+                            if ("1", "f") not in enemy_positions and ("1", "g") not in enemy_positions:
+                                legal_positions.append(("1","g"))
                     # Long
                     rook = board.piece_at_position(("1","a"))
-                    if rook is not None:
+                    if type(rook) == Rook:
                         if not rook.has_moved and\
                         not board.is_occupied(("1","b")) and\
                         not board.is_occupied(("1","c")) and\
@@ -87,7 +89,7 @@ class King(Piece):
                 if ("8", "e") not in enemy_positions:
                     # Short
                     rook = board.piece_at_position(("8","h"))
-                    if rook is not None:
+                    if type(rook) == Rook:
                         if not rook.has_moved and\
                         not board.is_occupied(("8","f")) and\
                         not board.is_occupied(("8","g")):
@@ -95,7 +97,7 @@ class King(Piece):
                                 legal_positions.append(("8","g"))
                     # Long
                     rook = board.piece_at_position(("8","a"))
-                    if rook is not None:
+                    if type(rook) == Rook:
                         if not rook.has_moved and\
                         not board.is_occupied(("8","b")) and\
                         not board.is_occupied(("8","c")) and\

@@ -30,6 +30,11 @@ class Pawn(Piece):
                                     .color == Color.BLACK:
                         legal_positions.append((chr(ord(position[0]) + 1),
                                                 chr(ord(position[1]) - 1)))
+                # En passant                                                
+                elif position[0] == "5" and chr(ord(position[1]) + 1) in board.board[position[0]]:
+                    piece = board.piece_at_position((position[0], chr(ord(position[1]) + 1)))
+                    if type(piece) == Pawn and piece.color == Color.BLACK:
+                        legal_positions.append(("6", chr(ord(position[1]) + 1)))
             # Taking left
             if position[1] != "h":
                 if chr(ord(position[1]) + 1) in board.board[chr(ord(position[0]) + 1)]:
@@ -41,7 +46,12 @@ class Pawn(Piece):
                                     .color == Color.BLACK:
                         legal_positions.append((chr(ord(position[0]) + 1),
                                                 chr(ord(position[1]) + 1)))
-
+                # En passant                                                
+                elif position[0] == "5" and chr(ord(position[1]) - 1) in board.board[position[0]]:
+                    piece = board.piece_at_position((position[0], chr(ord(position[1]) - 1)))
+                    if type(piece) == Pawn and piece.color == Color.BLACK:
+                        legal_positions.append(("6", chr(ord(position[1]) - 1)))
+        
         # Black Pawn
         else:
             if int(position[0]) == 1:
@@ -50,7 +60,7 @@ class Pawn(Piece):
                 legal_positions.append(("5", position[1]))
             if position[1] not in board.board[chr(ord(position[0]) - 1)]:
                 legal_positions.append((chr(ord(position[0]) - 1), position[1]))
-            # Taking right
+            # Taking left
             if position[1] != "a":
                 if chr(ord(position[1]) - 1) in board.board[chr(ord(position[0]) - 1)]:
                     if include_own:
@@ -61,7 +71,12 @@ class Pawn(Piece):
                                     .color == Color.WHITE:
                         legal_positions.append((chr(ord(position[0]) - 1),
                                                 chr(ord(position[1]) - 1)))
-            # Taking left
+                # En passant                                                
+                elif position[0] == "4" and chr(ord(position[1]) - 1) in board.board[position[0]]:
+                    piece = board.piece_at_position((position[0], chr(ord(position[1]) - 1)))
+                    if type(piece) == Pawn and piece.color == Color.WHITE:
+                        legal_positions.append(("3", chr(ord(position[1]) - 1)))
+            # Taking right
             if position[1] != "h":
                 if chr(ord(position[1]) + 1) in board.board[chr(ord(position[0]) - 1)]:
                     if include_own:
@@ -72,5 +87,10 @@ class Pawn(Piece):
                                     .color == Color.WHITE:
                         legal_positions.append((chr(ord(position[0]) - 1),
                                                 chr(ord(position[1]) + 1)))
+                # En passant
+                elif position[0] == "4" and chr(ord(position[1]) + 1) in board.board[position[0]]:
+                    piece = board.piece_at_position((position[0], chr(ord(position[1]) + 1)))
+                    if type(piece) == Pawn and piece.color == Color.WHITE:
+                        legal_positions.append(("3", chr(ord(position[1]) + 1)))
 
         return legal_positions

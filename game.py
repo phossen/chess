@@ -54,6 +54,7 @@ selected = None
 old_x = None
 old_y = None
 clock = pygame.time.Clock()
+last_moved_piece = None
 
 while running:
     for event in pygame.event.get():
@@ -111,14 +112,42 @@ while running:
                                 board.board[new_position[0]][new_position[1]] = old_piece
                             else:
                                 del board.board[new_position[0]][new_position[1]]
+                        # En Passant
+                        elif type(selected) == Pawn and new_position[1] != old_position[1] and old_piece is None and last_moved_piece is not None:
+                            if last_moved_piece == board.piece_at_position((old_position[0],new_position[1])):
+                                del board.board[old_position[0]][new_position[1]]
+                                # Switch player
+                                active_player = Color.BLACK if active_player == Color.WHITE else Color.WHITE
+                                logging.info("{} {}{}{}{} {}".format(turn, old_position[0], old_position[1],
+                                                                    new_position[0], new_position[1], selected.name))
+                                turn += 1
+                                last_moved_piece = selected
+                                # Check for checkmate and draw
+                                if board.check_check(active_player):
+                                    if board.check_checkmate(active_player):
+                                        logging.debug("Checkmate")
+                                        running = False
+                                        break
+                                    logging.debug("Check")
+                                elif board.check_draw(active_player):
+                                        logging.debug("Draw")
+                                        running = False
+                                        break
+                            # Revert move
+                            else:
+                                logging.debug("Illegal en passant.")
+                                selected.x = old_x
+                                selected.y = old_y
+                                board.board[old_position[0]][old_position[1]] = selected
+                                del board.board[new_position[0]][new_position[1]]
                         else:
-                            # Exchange pawn
                             if type(selected) == Pawn:
+                                # Exchange pawn
                                 if (active_player == Color.BLACK and new_position[0] == "1") or\
                                 (active_player == Color.WHITE and new_position[0] == "8"):
                                     # TODO: Exchange pawn for arbitrary other piece
                                     board.board[new_position[0]][new_position[1]] = Queen(active_player, new_x, new_y, tileSize)
-                                    logging.debug("Exchanged Pawn on {}{} to Queen.".format(new_position[0], new_position[1]))
+                                    logging.debug("Exchanged Pawn on {}{} to {}.".format(new_position[0], new_position[1], board.board[new_position[0]][new_position[1]].name))
                             # Castling
                             elif type(selected) == King:
                                 if not selected.has_moved:
@@ -149,6 +178,7 @@ while running:
                             logging.info("{} {}{}{}{} {}".format(turn, old_position[0], old_position[1],
                                                                  new_position[0], new_position[1], selected.name))
                             turn += 1
+                            last_moved_piece = selected
 
                             # Check for checkmate and draw
                             if board.check_check(active_player):
